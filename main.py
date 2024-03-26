@@ -99,7 +99,7 @@ if __name__ == '__main__':
     db_name = 'book'
     helper = MilvusHelper(host='127.0.0.1', port='19530', db_name=db_name)
     transformer = Transformer.Transformer()
-    search_text = 'Create a new namespace named kube-xxxx'
+    search_text = '查询某一个pod的日志'
     print(f'我想要:\t{search_text}')
     search_vector = transformer.get_embedding(search_text)
     res = helper.client.search(
