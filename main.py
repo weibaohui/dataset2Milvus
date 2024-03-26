@@ -1,40 +1,78 @@
-from datasets import load_dataset
-import pandas as pd
-from sentence_transformers import SentenceTransformer
+from peewee import chunked
+from pymilvus import MilvusClient, DataType
 
-# https://huggingface.co/thenlper/gte-large
-embedding_model = SentenceTransformer("thenlper/gte-large")
-
-
-def get_embedding(text: str) -> list[float]:
-    if not text.strip():
-        print("Attempted to get embedding for empty text.")
-        return []
-
-    embedding = embedding_model.encode(text)
-
-    return embedding.tolist()
+import SqliteDataBase
+import Transformer
+import data
+from milvus_helper import MilvusHelper
 
 
-def print_hi(name):
-    # https://huggingface.co/datasets/AIatMongoDB/embedded_movies
-    dataset = load_dataset("ComponentSoft/k8s-kubectl")
+def create_collection(client: MilvusClient, collection_name: str):
+    # 3.1. Create schema
+    schema = client.create_schema(
+        auto_id=True,
+        enable_dynamic_field=True,
+    )
 
-    # Convert the dataset to a pandas dataframe
-    dataset_df = pd.DataFrame(dataset["train"])
+    # 3.2. Add fields to schema
+    schema.add_field(field_name="id", datatype=DataType.INT64, is_primary=True)
+    schema.add_field(field_name="vector", datatype=DataType.FLOAT_VECTOR, dim=1024)
+    schema.add_field(field_name="objective", datatype=DataType.VARCHAR, max_length=1000, is_nullable=True)
+    schema.add_field(field_name="command_name", datatype=DataType.VARCHAR, max_length=1000, is_nullable=True)
+    schema.add_field(field_name="command", datatype=DataType.VARCHAR, max_length=1000, is_nullable=True)
+    schema.add_field(field_name="description", datatype=DataType.VARCHAR, max_length=1000, is_nullable=True)
+    schema.add_field(field_name="syntax", datatype=DataType.VARCHAR, max_length=1000, is_nullable=True)
+    schema.add_field(field_name="flags", datatype=DataType.VARCHAR, max_length=1000, is_nullable=True)
+    schema.add_field(field_name="question", datatype=DataType.VARCHAR, max_length=1000, is_nullable=True)
+    # 3.3. Prepare index parameters
+    index_params = client.prepare_index_params()
 
-    dataset_df = dataset_df.dropna(subset=["command"])
-    print("\nNumber of missing values in each column after removal:")
-    print(dataset_df.isnull().sum())
+    # 3.4. Add indexes
+    index_params.add_index(
+        field_name="vector",
+        index_type="IVF_FLAT",
+        metric_type="IP",  # COSINE 、 L2 或 IP
+        params={"nlist": 128}
+    )
 
-    dataset_df = dataset_df.drop(columns=["chain_of_thought"])
-    # print(dataset_df.head(5))
-
-    dataset_df = dataset_df.head(5)
-    dataset_df["strs"] = dataset_df["question"] + ";" + dataset_df["description"]
-    dataset_df["embedding"] = dataset_df["strs"].apply(get_embedding)
-    print(dataset_df)
+    # 3.5. Create a collection with the index loaded simultaneously
+    client.create_collection(
+        collection_name=collection_name,
+        schema=schema,
+        index_params=index_params
+    )
+    pass
 
 
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    # 创建milvus数据库
+    # create_db('book')
+    # db_name = 'book'
+    # helper = MilvusHelper(host='127.0.0.1', port='19530', db_name=db_name)
+    # helper.drop_collection('book')
+    # create_collection(helper.client, 'book')
+    # helper.describe_collection('book')
+    # helper.load_collection('book')
+
+    # 获取数据集
+    # data = data.Data()
+    # items = data.get_data_sets("book")
+    # print(items[0])
+
+    # 将数据暂存到sqlite中，后面逐条计算向量，然后逐条更新，重启后可恢复进度
+    # SqliteDataBase.batch_save_items(items)
+
+    # 获取Vector 为null 的数据进行处理
+    items = SqliteDataBase.list_vector_null_items()
+    print(len(items))
+    transformer = Transformer.Transformer()
+    for item in items:
+        vector = transformer.get_embedding(item.strs)
+        item.vector = vector
+        (SqliteDataBase.Commands.update(
+            {
+                SqliteDataBase.Commands.vector: vector
+            }
+        )
+         .where(SqliteDataBase.Commands.id == item.id)
+         .execute())

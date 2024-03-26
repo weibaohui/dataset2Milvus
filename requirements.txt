@@ -32,6 +32,7 @@ networkx==3.2.1
 numpy==1.26.4
 packaging==24.0
 pandas==2.2.1
+peewee==3.17.1
 pillow==10.2.0
 pip==24.0
 protobuf==5.26.0
