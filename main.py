@@ -99,8 +99,8 @@ if __name__ == '__main__':
     db_name = 'book'
     helper = MilvusHelper(host='127.0.0.1', port='19530', db_name=db_name)
     transformer = Transformer.Transformer()
-    search_text = 'Create a new namespace named kube-ingress'
-    print(f'Q:\t{search_text}')
+    search_text = 'Create a new namespace named kube-xxxx'
+    print(f'我想要:\t{search_text}')
     search_vector = transformer.get_embedding(search_text)
     res = helper.client.search(
         collection_name='book',  # Replace with the actual name of your collection
@@ -121,4 +121,5 @@ if __name__ == '__main__':
         ids=ids_list
     )
     for item in res:
-        print(f'A:\t{item['command']} \t {item['flags']}')
+        print(f'参考命令:\t{item['command']}')
+        print(f'请给我一个完整的具体的可执行的命令，只要命令本身，其他啥都不要返回')
