@@ -9,7 +9,7 @@ def calc_zh_vector():
     items = list(items)
     transformer = Transformer.Transformer()
     for i, item in enumerate(items):
-        print(f'{i}/{len(items)}')
+        print(f'{i+1}/{len(items)}')
         # 对中英文描述 合并计算向量
         vector = transformer.get_embedding(item['zh_strs']+'\n'+item['strs'])
         (SqliteDataBase.Commands.update(
@@ -24,6 +24,6 @@ def calc_zh_vector():
 
 if __name__ == '__main__':
     for i in range(10000):
-        print(f'第{i}次计算')
+        print(f'第{i+1}次计算')
         calc_zh_vector()
         time.sleep(30)

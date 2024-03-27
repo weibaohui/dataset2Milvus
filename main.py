@@ -141,7 +141,7 @@ def translate_command():
         )
          .where(SqliteDataBase.Commands.id == item['id'])
          .execute())
-        time.sleep(1)
+        time.sleep(0.5)
 
 
 if __name__ == '__main__':
