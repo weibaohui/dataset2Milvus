@@ -5,7 +5,7 @@ logger = logging.getLogger('peewee')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
 
-db = SqliteDatabase('kubectl.db')
+db = SqliteDatabase('temp.db')
 
 
 def batch_save_items(items):
@@ -13,6 +13,7 @@ def batch_save_items(items):
         Commands.insert_many(batch).execute()
 
 
+# noinspection PyComparisonWithNone
 def list_vector_null_items():
     return Commands.select().where(Commands.vector == None)
 

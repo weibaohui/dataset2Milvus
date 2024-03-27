@@ -6,6 +6,10 @@ import SqliteDataBase
 import Transformer
 from milvus_helper import MilvusHelper
 
+DB_NAME = 'book'
+COLLECTION_NAME = 'book'
+helper = MilvusHelper(host='127.0.0.1', port='19530', db_name=DB_NAME)
+
 
 def create_collection(client: MilvusClient, collection_name: str):
     # 3.1. Create schema
@@ -67,12 +71,10 @@ def import_dataset_to_milvus():
     #      .execute())
     # 4.将sqlite中的数据，导入到milvus 中
     # 4.1创建milvus数据库
-    db_name = 'book'
-    helper = MilvusHelper(host='127.0.0.1', port='19530', db_name=db_name)
-    # helper.create_db('book')
-    helper.drop_collection('book')
-    create_collection(helper.client, 'book')
-    helper.describe_collection('book')
+    # helper.create_db(DB_NAME)
+    helper.drop_collection(COLLECTION_NAME)
+    create_collection(helper.client, COLLECTION_NAME)
+    helper.describe_collection(COLLECTION_NAME)
     # 4.2 从sqlite中查询数据,插入milvus
     items = SqliteDataBase.Commands.select().dicts()
     items = list(items)
@@ -89,37 +91,37 @@ def import_dataset_to_milvus():
             print(item)
             print(e)
     # 4.3 查看milvus中的数据
-    helper.describe_collection('book')
-    helper.load_collection('book')
+    helper.describe_collection(COLLECTION_NAME)
+    helper.load_collection(COLLECTION_NAME)
 
 
-if __name__ == '__main__':
-    # import_dataset_to_milvus()
-
-    db_name = 'book'
-    helper = MilvusHelper(host='127.0.0.1', port='19530', db_name=db_name)
+def search_with_transformer(search_text: str):
     transformer = Transformer.Transformer()
     search_text = '查询某一个pod的日志'
     print(f'我想要:\t{search_text}')
     search_vector = transformer.get_embedding(search_text)
     res = helper.client.search(
-        collection_name='book',  # Replace with the actual name of your collection
+        collection_name=COLLECTION_NAME,  # Replace with the actual name of your collection
         # Replace with your query vector
         data=[search_vector],
         limit=1,  # Max. number of search results to return
         search_params={"metric_type": "IP", "params": {}}  # Search parameters
     )
-
     # Convert the output to a formatted JSON string
     result = json.dumps(res, indent=4)
     # print(result)
     ids_list = [item['id'] for item in res[0]]
     # print(ids_list)
-
     res = helper.client.get(
-        collection_name='book',
+        collection_name=COLLECTION_NAME,
         ids=ids_list
     )
     for item in res:
         print(f'参考命令:\t{item['command']}')
         print(f'请给我一个完整的具体的可执行的命令，只要命令本身，其他啥都不要返回')
+
+
+if __name__ == '__main__':
+    # import_dataset_to_milvus()
+
+    search_with_transformer('创建一个名为xyz的namespace')

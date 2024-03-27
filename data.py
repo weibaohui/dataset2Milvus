@@ -17,9 +17,9 @@ def get_data_sets(name):
     # print(dataset_df.head(5))
 
     # dataset_df = dataset_df.head(5)
+
+    # 需要计算向量的字段
     dataset_df["strs"] = dataset_df["question"] + ";" + dataset_df["description"]
-    # dataset_df["vector"] = dataset_df["strs"].apply(self.get_embedding)
+
     print(dataset_df.columns)
     return dataset_df.to_dict("records")
-
-
