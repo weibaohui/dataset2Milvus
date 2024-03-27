@@ -97,7 +97,6 @@ def import_dataset_to_milvus():
 
 def search_with_transformer(search_text: str):
     transformer = Transformer.Transformer()
-    search_text = '查询某一个pod的日志'
     print(f'我想要:\t{search_text}')
     search_vector = transformer.get_embedding(search_text)
     res = helper.client.search(
@@ -124,4 +123,5 @@ def search_with_transformer(search_text: str):
 if __name__ == '__main__':
     # import_dataset_to_milvus()
 
-    search_with_transformer('创建一个名为xyz的namespace')
+    # search_with_transformer('创建一个名为xyz的namespace')
+    pass
