@@ -11,7 +11,7 @@ from milvus_helper import MilvusHelper
 
 DB_NAME = 'book'
 COLLECTION_NAME = 'book'
-helper = MilvusHelper(host='127.0.0.1', port='19530', db_name=DB_NAME)
+MILVUS_HELPER = MilvusHelper(host='127.0.0.1', port='19530', db_name=DB_NAME)
 
 
 def create_collection(client: MilvusClient, collection_name: str):
@@ -75,9 +75,9 @@ def import_dataset_to_milvus():
     # 4.将sqlite中的数据，导入到milvus 中
     # 4.1创建milvus数据库
     # helper.create_db(DB_NAME)
-    helper.drop_collection(COLLECTION_NAME)
-    create_collection(helper.client, COLLECTION_NAME)
-    helper.describe_collection(COLLECTION_NAME)
+    MILVUS_HELPER.drop_collection(COLLECTION_NAME)
+    create_collection(MILVUS_HELPER.client, COLLECTION_NAME)
+    MILVUS_HELPER.describe_collection(COLLECTION_NAME)
     # 4.2 从sqlite中查询数据,插入milvus
     items = SqliteDataBase.Commands.select().dicts()
     items = list(items)
@@ -90,7 +90,7 @@ def import_dataset_to_milvus():
             item['question'] = ''
     # 4.2.1 批量插入数据,适合生产,按1000条为一批进行插入
     for batch in chunked(items, 1000):
-        helper.insert(COLLECTION_NAME, batch)
+        MILVUS_HELPER.insert(COLLECTION_NAME, batch)
     # 4.2.2 逐条插入数据，适合调试
     # for item in items:
     #     try:
@@ -99,15 +99,15 @@ def import_dataset_to_milvus():
     #         print(item)
     #         print(e)
     # 4.3 查看milvus中的数据
-    helper.describe_collection(COLLECTION_NAME)
-    helper.load_collection(COLLECTION_NAME)
+    MILVUS_HELPER.describe_collection(COLLECTION_NAME)
+    MILVUS_HELPER.load_collection(COLLECTION_NAME)
 
 
 def search_with_transformer(search_text: str):
     transformer = Transformer.Transformer()
     print(f'我想要:\t{search_text}')
     search_vector = transformer.get_embedding(search_text)
-    res = helper.client.search(
+    res = MILVUS_HELPER.client.search(
         collection_name=COLLECTION_NAME,  # Replace with the actual name of your collection
         # Replace with your query vector
         data=[search_vector],
@@ -119,7 +119,7 @@ def search_with_transformer(search_text: str):
     # print(result)
     ids_list = [item['id'] for item in res[0]]
     # print(ids_list)
-    res = helper.client.get(
+    res = MILVUS_HELPER.client.get(
         collection_name=COLLECTION_NAME,
         ids=ids_list
     )
@@ -141,7 +141,7 @@ def translate_command():
         )
          .where(SqliteDataBase.Commands.id == item['id'])
          .execute())
-        time.sleep(0.5)
+        time.sleep(1)
 
 
 if __name__ == '__main__':
