@@ -1,10 +1,12 @@
 import json
+import time
 
 from peewee import chunked
 from pymilvus import MilvusClient, DataType
 
 import SqliteDataBase
 import Transformer
+import gemini
 from milvus_helper import MilvusHelper
 
 DB_NAME = 'book'
@@ -126,7 +128,23 @@ def search_with_transformer(search_text: str):
         print(f'请给我一个完整的具体的可执行的命令，只要命令本身，其他啥都不要返回')
 
 
+def translate_command():
+    items = SqliteDataBase.Commands.select().where(SqliteDataBase.Commands.zh_strs == None).dicts()
+    items = list(items)
+    for item in items:
+        zh_strs = gemini.translate(item['objective'] + '\n' + item['strs'])
+        (SqliteDataBase.Commands.update(
+            {
+                SqliteDataBase.Commands.zh_strs: zh_strs
+            }
+        )
+         .where(SqliteDataBase.Commands.id == item['id'])
+         .execute())
+        time.sleep(1)
+
+
 if __name__ == '__main__':
     # import_dataset_to_milvus()
-    search_with_transformer('创建一个名为xyz的namespace')
+    # search_with_transformer('将名为zhangsan的deploy扩容到5')
+    translate_command()
     pass
