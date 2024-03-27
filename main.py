@@ -131,7 +131,8 @@ def search_with_transformer(search_text: str):
 def translate_command():
     items = SqliteDataBase.Commands.select().where(SqliteDataBase.Commands.zh_strs == None).dicts()
     items = list(items)
-    for item in items:
+    for i, item in enumerate(items):
+        print(f'{i}/{len(items)}')
         zh_strs = gemini.translate(item['objective'] + '\n' + item['strs'])
         (SqliteDataBase.Commands.update(
             {
