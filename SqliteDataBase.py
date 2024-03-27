@@ -30,6 +30,7 @@ class Commands(Model):
     strs = TextField(null=True)
     vector = TextField(null=True)
     zh_strs = TextField(null=True)
+    zh_vector = BooleanField(null=True)
 
     class Meta:
         database = db  # This model uses the "people.db" database.
