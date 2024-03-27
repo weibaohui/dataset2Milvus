@@ -1,9 +1,11 @@
+import time
+
 import SqliteDataBase
 import Transformer
 
 
 def calc_zh_vector():
-    items = SqliteDataBase.Commands.select().where(SqliteDataBase.Commands.zh_vector == None and SqliteDataBase.Commands.zh_strs != None ).dicts()
+    items = SqliteDataBase.Commands.select().where(SqliteDataBase.Commands.zh_vector == None , SqliteDataBase.Commands.zh_strs != None ).dicts()
     items = list(items)
     transformer = Transformer.Transformer()
     for i, item in enumerate(items):
@@ -21,4 +23,7 @@ def calc_zh_vector():
 
 
 if __name__ == '__main__':
-    calc_zh_vector()
+    for i in range(10000):
+        print(f'第{i}次计算')
+        calc_zh_vector()
+        time.sleep(30)
