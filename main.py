@@ -1,5 +1,6 @@
 import json
 
+from peewee import chunked
 from pymilvus import MilvusClient, DataType
 
 import SqliteDataBase
@@ -85,11 +86,16 @@ def import_dataset_to_milvus():
         # None 类型转换为str
         if item['question'] is None or len(item['question']) == 0:
             item['question'] = ''
-        try:
-            helper.insert('book', item)
-        except Exception as e:
-            print(item)
-            print(e)
+    # 4.2.1 批量插入数据,适合生产,按1000条为一批进行插入
+    for batch in chunked(items, 1000):
+        helper.insert(COLLECTION_NAME, batch)
+    # 4.2.2 逐条插入数据，适合调试
+    # for item in items:
+    #     try:
+    #         helper.insert(COLLECTION_NAME, item)
+    #     except Exception as e:
+    #         print(item)
+    #         print(e)
     # 4.3 查看milvus中的数据
     helper.describe_collection(COLLECTION_NAME)
     helper.load_collection(COLLECTION_NAME)
@@ -122,6 +128,5 @@ def search_with_transformer(search_text: str):
 
 if __name__ == '__main__':
     # import_dataset_to_milvus()
-
-    # search_with_transformer('创建一个名为xyz的namespace')
+    search_with_transformer('创建一个名为xyz的namespace')
     pass
