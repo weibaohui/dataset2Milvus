@@ -22,7 +22,7 @@ RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-z
 RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-zh/resolve/main/tokenizer_config.json
 RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-zh/resolve/main/vocab.txt
 RUN mkdir -p /data/model/gte-large-zh/1_Pooling
-RUN wget -P /data/model/gte-large-zh/1_Pooling https://huggingface.co/thenlper/gte-large-zh/resolve/main/1_Pooling/config.json` 
+RUN wget -P /data/model/gte-large-zh/1_Pooling https://huggingface.co/thenlper/gte-large-zh/resolve/main/1_Pooling/config.json
 # set transformer model
 ENV TRANSFORMERS_OFFLINE=1
 ENV TRANSFORMERS_OFFLINE_NAME=thenlper/gte-large-zh
