@@ -19,6 +19,26 @@ Datasets：https://huggingface.co/datasets/ComponentSoft/k8s-kubectl
 2. 参考data.py 调整datasets中的字段
 3. 参考SqliteDataBase.py 设置对应dataset的数据库字段、sqlite数据库名称等
 4. 参考Transformer.py 设置对应的计算向量用的文本transformer
+5. 使用Gemini大模型，需要配置API_KEY
+```bash
+export GOOGLE_API_KEY='xxxxxxxxxxx'
+```
 
+
+# Docker 运行环境配置
+1. 镜像内置 thenlper/gte-large-zh sentence transformer,如需更改，请更新Dockerfile文件
+2. 镜像默认启动flask，连接Milvus进行查询
+3. Milvus连接配置需要通过env进行指定
+4. Docker run
+```docker
+docker run   -e MILVUS_HOST=host.docker.internal \
+             -e MILVUS_HOST_PORT=19530 \
+             -e MILVUS_DB_NAME=book \
+             -e MILVUS_COLLECTION_NAME=book \
+             -it --rm \
+             -p 3388:80 \
+             ghcr.io/weibaohui/vector-helper:latest
+             
+```
 
 # enjoy
