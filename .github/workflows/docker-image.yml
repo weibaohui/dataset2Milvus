@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 env:
-  IMAGE_NAME: milvus-web-search
+  IMAGE_NAME: vector-helper
 
 jobs:
 
