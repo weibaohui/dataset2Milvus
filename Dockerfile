@@ -11,7 +11,7 @@ RUN pip install uv \
     && uv pip install -r requirements.txt
 
 # install sentence transformer off line
-RUN mkdir /data/model/gte-large-zh
+RUN mkdir -p /data/model/gte-large-zh
 RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-zh/resolve/main/config.json
 RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-zh/resolve/main/model.safetensors
 RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-zh/resolve/main/modules.json
@@ -21,7 +21,7 @@ RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-z
 RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-zh/resolve/main/tokenizer.json
 RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-zh/resolve/main/tokenizer_config.json
 RUN wget -P /data/model/gte-large-zh https://huggingface.co/thenlper/gte-large-zh/resolve/main/vocab.txt
-RUN mkdir /data/model/gte-large-zh/1_Pooling
+RUN mkdir -p /data/model/gte-large-zh/1_Pooling
 RUN wget -P /data/model/gte-large-zh/1_Pooling https://huggingface.co/thenlper/gte-large-zh/resolve/main/1_Pooling/config.json` 
 # set transformer model
 ENV TRANSFORMERS_OFFLINE=1
