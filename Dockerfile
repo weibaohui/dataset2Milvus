@@ -1,5 +1,6 @@
 FROM python:latest
-LABEL authors="weibaohui"
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
 WORKDIR /app
 COPY . .
 
