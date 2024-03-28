@@ -12,7 +12,7 @@ from milvus_helper import MilvusHelper
 
 DB_NAME = os.getenv('MILVUS_DB_NAME', 'book')
 COLLECTION_NAME = os.getenv('MILVUS_COLLECTION_NAME', 'book')
-MILVUS_HOST = os.getenv('MILVUS_HOST', 'host.docker.internal')
+MILVUS_HOST = os.getenv('MILVUS_HOST', '127.0.0.1')
 MILVUS_HOST_PORT = os.getenv('MILVUS_HOST_PORT', '19530')
 MILVUS_HELPER = MilvusHelper(host=MILVUS_HOST, port=MILVUS_HOST_PORT, db_name=DB_NAME)
 
