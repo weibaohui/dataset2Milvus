@@ -90,6 +90,8 @@ def import_dataset_to_milvus():
     for item in items:
         del item['id']
         del item['strs']
+        del item['zh_strs']
+        del item['zh_vector']
         item['vector'] = json.loads(item['vector'])
         # None 类型转换为str
         if item['question'] is None or len(item['question']) == 0:
@@ -158,5 +160,5 @@ def translate_command():
 if __name__ == '__main__':
     # import_dataset_to_milvus()
     # search_with_transformer('将名为zhangsan的deploy扩容到5')
-    translate_command()
+    # translate_command()
     pass
