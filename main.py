@@ -12,6 +12,7 @@ from milvus_helper import MilvusHelper
 DB_NAME = 'book'
 COLLECTION_NAME = 'book'
 MILVUS_HELPER = MilvusHelper(host='127.0.0.1', port='19530', db_name=DB_NAME)
+# MILVUS_HELPER = None
 
 
 def create_collection(client: MilvusClient, collection_name: str):
@@ -133,14 +134,19 @@ def translate_command():
     items = list(items)
     for i, item in enumerate(items):
         print(f'{i}/{len(items)}')
-        zh_strs = gemini.translate(item['objective'] + '\n' + item['strs'])
-        (SqliteDataBase.Commands.update(
-            {
-                SqliteDataBase.Commands.zh_strs: zh_strs
-            }
-        )
-         .where(SqliteDataBase.Commands.id == item['id'])
-         .execute())
+        try:
+            zh_strs = gemini.translate(item['objective'] + '\n' + item['strs'])
+            (SqliteDataBase.Commands.update(
+                {
+                    SqliteDataBase.Commands.zh_strs: zh_strs
+                }
+            )
+             .where(SqliteDataBase.Commands.id == item['id'])
+             .execute())
+        except Exception as e:
+            print(e)
+            continue
+
         time.sleep(1)
 
 
