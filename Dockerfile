@@ -29,4 +29,4 @@ ENV TRANSFORMERS_OFFLINE_NAME=thenlper/gte-large-zh
 ENV TRANSFORMERS_OFFLINE_PATH=/data/model/gte-large-zh
 
 EXPOSE 80
-CMD ["bash", "-c","/app/start-web.sh"]
+CMD ["bash","/app/start-web.sh"]
